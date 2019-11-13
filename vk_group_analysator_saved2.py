@@ -1,47 +1,40 @@
-# -*- coding: utf-8 -*-
-import urllib.request
 import vk_api
-try: 
-    from BeautifulSoup import BeautifulSoup
-except ImportError:
-    from bs4 import BeautifulSoup
-with urllib.request.urlopen('http://ictis.sfedu.ru/rasp/HTML/39.htm') as url: s = url.read()
+import random
+import file1
 
-def find_day(soup, needed_day):
-	table = soup.findAll('font', attrs={'size': '2'})
+def main():
+    VK = vk_api.VkApi(token = '7bae9726b9b3b04e6c21694562aa1e0f80e0dc0f202afae626f685b9cac3e4021e9aa077e48401c872dbc')
 
-	for x in table: #finding index of needed week and saving it in "indx" variable
+    while True:
+        try:
+            get_chat = VK.method("messages.getConversations", { "count": 1, "filter":'unanswered'})
+            get_id_1 = get_chat['items'][0]['last_message']['from_id']
+            first_mes_1 = random.randint(100000, 10000000)
+            now_text = get_chat['items'][0]['last_message']['text']
 
-		time_table = ''
-		day = x.find('p').text
+            text = open('C:\\Users\\denis\\Desktop\\Python 3\\parser\\timetable.txt', 'r')
+            day = open('C:\\Users\\denis\\Desktop\\Python 3\\parser\\day.txt', 'w', encoding='utf-8')
 
-		if day[4:] == needed_day:
-			time_table = x
-			indx = table.index(time_table)
-			break
+            space_indx = list(now_text).index(" ")
+            if space_indx<2: #if we have date less then 10 (1-9 days of every month)
+                now_text = "0" + now_text #here we got 01-09 day
 
-	find_timetable(soup, indx)
+            for x in range(len(now_text)):
+                if now_text[x] == " ":
+                    formated_text = now_text[:x] + " " + now_text[x:] + " "
 
-def find_timetable(soup, indx):
-	print("find_timetable()")
-	try:
-		file = open('C:\\Users\\denis\\Desktop\\Python 3\\parser\\timetable.txt', 'w')
-		name_box2 = soup.findAll('font', attrs={'size': "1"})
+            day.write(formated_text)
+            file1.main_f()
 
-		for x in name_box2[indx*9:indx*9+8]:
-			buff = x
-			buff = buff.text.strip()
+            file = open('C:\\Users\\denis\\Desktop\\Python 3\\parser\\timetable.txt', 'r')
+            file_text = file.readline()
+            # print(file_text)
+            print(VK.method("messages.send", {"random_id": first_mes_1,"user_id": get_id_1, "message": file_text}))
 
-			file.write(buff)
-			print(buff)
+        except:
+            print("Imput is empty")
+            
 
-	except:
-		print("Введите корректный день.")
 
-def main_f():
-	soup = BeautifulSoup(s, 'html.parser')
-	#code starts below
-	day_file = open('C:\\Users\\denis\\Desktop\\Python 3\\parser\\day.txt', 'r', encoding='utf-8')
-	needed_day = day_file.readline()
-	print(needed_day)
-	find_day(soup, needed_day)
+if __name__ == '__main__':
+    main()

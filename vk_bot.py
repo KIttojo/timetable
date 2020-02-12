@@ -1,6 +1,6 @@
 import vk_api
 import random
-import file1
+import parser
 
 def main():
 	VK = vk_api.VkApi(token = 'COMMUNITY_TOKEN')

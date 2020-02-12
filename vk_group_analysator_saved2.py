@@ -3,7 +3,7 @@ import random
 import file1
 
 def main():
-	VK = vk_api.VkApi(token = '7bae9726b9b3b04e6c21694562aa1e0f80e0dc0f202afae626f685b9cac3e4021e9aa077e48401c872dbc')
+	VK = vk_api.VkApi(token = 'COMMUNITY_TOKEN')
 
 	while True:
 		try:
@@ -12,28 +12,30 @@ def main():
 			first_mes_1 = random.randint(100000, 10000000)
 			now_text = get_chat['items'][0]['last_message']['text']
 
-			file = open('C:\\Users\\denis\\Desktop\\Python 3\\parser\\timetable.txt', 'r')
-			day = open('C:\\Users\\denis\\Desktop\\Python 3\\parser\\day.txt', 'w', encoding='utf-8')
+			file = open('DIRECTORY\\timetable.txt', 'r')
+			day = open('SAME_DIRECTORY\\day.txt', 'w', encoding='utf-8')
 
 			space_indx = list(now_text).index(" ")
-
-			if space_indx<2:
+			#если цифра <10, то добавляем 0 для корректного парсинга
+			if space_indx < 2:
 				now_text = "0" + now_text
-
+			#форматируем
 			for x in range(len(now_text)):
 				if now_text[x] == " ":
 					formated_text = now_text[:x] + " " + now_text[x:] + " "
-
+			#записываем готовую дату в файл и запускаем парсер
 			day.write(formated_text)
 			file1.main_f()
-
+			#счтываем результат работы парсера и отправлем в качестве аргумента VK API
 			file_text = file.readline()
+
 			print(VK.method("messages.send", {"random_id": first_mes_1,"user_id": get_id_1, "message": file_text}))
+
 			file.close()
 			day.close()
-			print("Конец")
+
 		except:
-			print("-")
+			print("No messages yet.")
 
 if __name__ == '__main__':
 	main()
